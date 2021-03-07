@@ -72,6 +72,28 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def search(problem, frontier):
+    STATE_INDEX = 0
+    DIRECTION_INDEX = 1
+
+    visited_states = list()
+    # The frontier holds tuple of state and the path to the state
+    frontier.push((problem.getStartState(), []))
+    while not frontier.isEmpty():
+        # Get the next state
+        current_state, path = frontier.pop()
+        if problem.isGoalState(current_state):
+            return path
+
+        # Add all unvisited successors to the frontier
+        for successor in problem.getSuccessors(current_state):
+            if successor[STATE_INDEX] not in visited_states:
+                visited_states.append(successor[STATE_INDEX])
+                frontier.push((successor[STATE_INDEX], path + [successor[DIRECTION_INDEX]]))
+
+    # No path found
+    return []
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -86,13 +108,13 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # DFS work in LIFO so the frontier type should be Stack
+    return search(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # BFS work in FIFO so the frontier type should be Queue
+    return search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
