@@ -73,23 +73,23 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def search(problem, frontier):
-    STATE_INDEX = 0
-    DIRECTION_INDEX = 1
-
     visited_states = list()
     # The frontier holds tuple of state and the path to the state
-    frontier.push((problem.getStartState(), []))
+    frontier.push(((problem.getStartState(), '', 0), []))
     while not frontier.isEmpty():
         # Get the next state
-        current_state, path = frontier.pop()
+        (current_state, current_direction, current_cost), path = frontier.pop()
+        if current_state in visited_states:
+            continue
+
+        visited_states.append(current_state)
         if problem.isGoalState(current_state):
             return path
 
         # Add all unvisited successors to the frontier
-        for successor in problem.getSuccessors(current_state):
-            if successor[STATE_INDEX] not in visited_states:
-                visited_states.append(successor[STATE_INDEX])
-                frontier.push((successor[STATE_INDEX], path + [successor[DIRECTION_INDEX]]))
+        for next_state, direction, cost in problem.getSuccessors(current_state):
+            new_cost = current_cost + cost
+            frontier.push(((next_state, direction, new_cost), path + [direction]))
 
     # No path found
     return []
@@ -118,8 +118,7 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return search(problem, util.PriorityQueueWithFunction(priorityFunction=lambda item: item[0][2]))
 
 def nullHeuristic(state, problem=None):
     """
@@ -131,7 +130,7 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return search(problem, util.PriorityQueueWithFunction(priorityFunction=lambda item: heuristic(item[0][0], problem) + item[0][2]))
 
 
 # Abbreviations
