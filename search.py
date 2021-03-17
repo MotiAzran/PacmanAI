@@ -73,7 +73,7 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def search(problem, frontier):
-    visited_states = list()
+    visited_states = set()
     # The frontier holds tuple of state and the path to the state
     frontier.push(((problem.getStartState(), '', 0), []))
     while not frontier.isEmpty():
@@ -82,7 +82,7 @@ def search(problem, frontier):
         if current_state in visited_states:
             continue
 
-        visited_states.append(current_state)
+        visited_states.add(current_state)
         if problem.isGoalState(current_state):
             return path
 
