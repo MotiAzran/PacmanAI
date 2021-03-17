@@ -502,7 +502,10 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     heuristic = 0
     for food in foodGrid.asList():
-        heuristic = max(heuristic, mazeDistance(position, food, problem.startingGameState))
+        if not (position, food) in problem.heuristicInfo.keys():
+            problem.heuristicInfo[(position, food)] = mazeDistance(position, food, problem.startingGameState)
+
+        heuristic = max(heuristic, problem.heuristicInfo[(position, food)])
 
     return heuristic
 
