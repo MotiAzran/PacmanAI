@@ -297,7 +297,11 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        return (self.startingPosition, tuple(self.corners))
+        corners = list(self.corners)
+        if self.startingPosition in self.corners:
+            corners.remove(self.startingPosition)
+
+        return (self.startingPosition, tuple(corners))
 
     def isGoalState(self, state):
         """
