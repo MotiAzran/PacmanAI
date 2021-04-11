@@ -328,10 +328,34 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: I tried stay away from "unscared" ghosts and eat scared ghosts
+    and the evaluation is higher when pacman is closer to capsule or food.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+
+    retval = currentGameState.getScore()
+
+    for ghostState in newGhostStates:
+        if ghostState.scaredTimer > 0:
+            # Don't afraid from the ghost
+            retval += manhattanDistance(newPos, ghostState.getPosition())
+        else:
+            # Stay away from the ghost
+            retval -= manhattanDistance(newPos, ghostState.getPosition())
+
+    # The retval will be higher if the food is closer
+    closestFoodDistance = min([manhattanDistance(newPos, foodPos) for foodPos in newFood.asList()], default=0)
+    retval -= closestFoodDistance
+
+    newCapsules = currentGameState.getCapsules()
+    # The retval will be higher if the capsule is closer
+    closestCapsuleDistance = min([manhattanDistance(newPos, capsulePos) for capsulePos in newCapsules], default=0)
+    retval -= closestCapsuleDistance
+
+    return retval
 
 # Abbreviation
 better = betterEvaluationFunction
