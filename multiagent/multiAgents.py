@@ -214,7 +214,58 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actionValues = util.Counter()
+        alpha, beta = float("-Inf"), float("Inf")
+
+        for action in gameState.getLegalActions(0):
+            actionValues[action] = self.minValue(gameState.generateSuccessor(0, action), alpha, beta)
+            # Update alpha value
+            alpha = max(alpha, actionValues[action])
+
+        return actionValues.argMax()
+
+    def isTerminal(self, state, curDepth, agent):
+        return state.isWin() or state.isLose() \
+               or curDepth == self.depth or len(state.getLegalActions(agent)) == 0
+
+    def maxValue(self, state, alpha, beta, curDepth=0):
+        if self.isTerminal(state, curDepth, 0):
+            return self.evaluationFunction(state)
+
+        v = float("-Inf")
+        for action in state.getLegalActions(0):
+            v = max(v, self.minValue(state.generateSuccessor(0, action), alpha, beta, curDepth))
+            if v > beta:
+                # The rest of the values won't affect our choice stop here (the current value is too big)
+                return v
+
+            alpha = max(alpha, v)
+
+        return v
+
+    def minValue(self, state, alpha, beta, curDepth=0, agent=1):
+        if self.isTerminal(state, curDepth, agent):
+            return self.evaluationFunction(state)
+
+        v = float("Inf")
+        if agent != (state.getNumAgents() - 1):
+            # next agent is a ghost
+            value_func = self.minValue
+            kwargs = {"curDepth": curDepth, "agent": agent + 1}
+        else:
+            # Next agent is pacman
+            value_func = self.maxValue
+            kwargs = {"curDepth": curDepth + 1}
+
+        for action in state.getLegalActions(agent):
+            v = min(v, value_func(state.generateSuccessor(agent, action), alpha, beta, **kwargs))
+            if v < alpha:
+                # The rest of the values won't affect our choice stop here (The current value is too small)
+                return v
+
+            beta = min(beta, v)
+
+        return v
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
