@@ -89,7 +89,7 @@ class ReflexAgent(Agent):
             # newPos has food
             retval += 100
         else:
-            # The retval will be higher as the food is closer
+            # The retval will be higher if the food is closer
             closestFoodDistance = min([manhattanDistance(newPos, foodPos) for foodPos in newFood.asList()], default=0)
             retval -= closestFoodDistance
 
@@ -98,7 +98,7 @@ class ReflexAgent(Agent):
             # newPos has capsule
             retval += 200
         else:
-            # The retval will be higher as the food is closer
+            # The retval will be higher if the capsule is closer
             closestCapsuleDistance = min([manhattanDistance(newPos, capsulePos) for capsulePos in newCapsules], default=0)
             retval -= closestCapsuleDistance
 
@@ -172,7 +172,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def isTerminal(self, state, curDepth, agent):
         return state.isWin() or state.isLose() \
-                or curDepth == self.depth or len(state.getLegalActions(agent)) == 0
+               or curDepth == self.depth or len(state.getLegalActions(agent)) == 0
 
     def maxValue(self, state, curDepth=0):
         if self.isTerminal(state, curDepth, 0):
