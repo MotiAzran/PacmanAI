@@ -280,7 +280,48 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actionValues = util.Counter()
+
+        for action in gameState.getLegalActions(0):
+            actionValues[action] = self.expectedValue(gameState.generateSuccessor(0, action))
+
+        return actionValues.argMax()
+
+    def isTerminal(self, state, curDepth, agent):
+        return state.isWin() or state.isLose() \
+               or curDepth == self.depth or len(state.getLegalActions(agent)) == 0
+
+    def maxValue(self, state, curDepth=0):
+        if self.isTerminal(state, curDepth, 0):
+            return self.evaluationFunction(state)
+
+        v = float("-Inf")
+        for action in state.getLegalActions(0):
+            v = max(v, self.expectedValue(state.generateSuccessor(0, action), curDepth))
+
+        return v
+
+    def expectedValue(self, state, curDepth=0, agent=1):
+        if self.isTerminal(state, curDepth, agent):
+            return self.evaluationFunction(state)
+
+        v = 0
+        if agent != (state.getNumAgents() - 1):
+            # next agent is a ghost
+            value_func = self.expectedValue
+            kwargs = {"curDepth": curDepth, "agent": agent + 1}
+        else:
+            # Next agent is pacman
+            value_func = self.maxValue
+            kwargs = {"curDepth": curDepth + 1}
+
+        # Same probability to choose any action
+        p = 1.0 / len(state.getLegalActions(agent))
+
+        for action in state.getLegalActions(agent):
+            v += (value_func(state.generateSuccessor(agent, action), **kwargs) * p)
+
+        return v
 
 def betterEvaluationFunction(currentGameState):
     """
