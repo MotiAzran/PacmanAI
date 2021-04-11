@@ -163,12 +163,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        utility = util.Counter()
+        actionValues = util.Counter()
 
         for action in gameState.getLegalActions(0):
-            utility[action] = self.minValue(gameState.generateSuccessor(0, action))
+            actionValues[action] = self.minValue(gameState.generateSuccessor(0, action))
 
-        return utility.argMax()
+        return actionValues.argMax()
 
     def isTerminal(self, state, curDepth, agent):
         return state.isWin() or state.isLose() \
